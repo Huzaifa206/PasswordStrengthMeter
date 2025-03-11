@@ -38,7 +38,7 @@ def check_password_strength(password):
         return "⚠️ Moderate Password - Consider adding more security features.", feedback
     else:
         return "❌ Weak Password - Improve it using the suggestions above.", feedback
-
+st.progress(score / 4)
 def generate_strong_password(length=12):
     characters = string.ascii_letters + string.digits + "!@#$%^&*"
     return ''.join(random.choice(characters) for _ in range(length))
