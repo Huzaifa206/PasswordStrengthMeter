@@ -3,6 +3,10 @@ import re
 import random
 import string
 
+# Initialize session state for saved passwords if not already present
+if 'saved_passwords' not in st.session_state:
+    st.session_state.saved_passwords = {}
+
 def check_password_strength(password):
     score = 0
     feedback = []
@@ -46,7 +50,15 @@ def generate_strong_password(length=12):
     return ''.join(random.choice(characters) for _ in range(length))
 
 # Streamlit UI
-st.set_page_config(page_title="Password Strength Meter", page_icon="🔒", layout="centered")
+st.set_page_config(page_title="Password Strength Meter", page_icon="🔒", layout="wide")
+
+st.sidebar.header("🔑 Saved Passwords")
+if st.session_state.saved_passwords:
+    for name, pwd in st.session_state.saved_passwords.items():
+        with st.sidebar.expander(name):
+            st.code(pwd, language='')
+else:
+    st.sidebar.write("No passwords saved yet.")
 
 st.markdown("""
     <style>
@@ -81,3 +93,14 @@ with st.container():
         strong_password = generate_strong_password(length)
         with st.expander("Click to reveal your strong password"):
             st.code(strong_password, language='')
+
+    st.markdown("---")
+    
+    save_name = st.text_input("Enter a name to save your password:")
+    save_password = st.text_input("Enter password to save:", type="password")
+    if st.button("Save Password", key="save", help="Click to save this password"):
+        if save_name and save_password:
+            st.session_state.saved_passwords[save_name] = save_password
+            st.success(f"Password saved under '{save_name}'!")
+        else:
+            st.warning("Please enter both a name and a password to save.")
